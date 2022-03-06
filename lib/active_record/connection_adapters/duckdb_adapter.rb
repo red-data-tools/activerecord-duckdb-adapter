@@ -29,18 +29,18 @@ module ActiveRecord
       include Duckdb::SchemaStatements
 
       NATIVE_DATABASE_TYPES = {
-        primary_key:  "BIGINT PRIMARY KEY",
-        string:       { name: "varchar" },
-        text:         { name: "text" },
-        integer:      { name: "integer" },
-        float:        { name: "float" },
-        decimal:      { name: "decimal" },
-        datetime:     { name: "datetime" },
-        time:         { name: "time" },
-        date:         { name: "date" },
-        binary:       { name: "blob" },
-        boolean:      { name: "boolean" },
-        json:         { name: "json" },
+        primary_key:  "INTEGER PRIMARY KEY",
+        string:       { name: "VARCHAR" },
+        integer:      { name: "INTEGER" },
+        float:        { name: "REAL" },
+        decimal:      { name: "DECIMAL" },
+        datetime:     { name: "TIMESTAMP" },
+        time:         { name: "TIME" },
+        date:         { name: "DATE" },
+        bigint:       { name: "BIGINT" },
+        binary:       { name: "BLOB" },
+        boolean:      { name: "BOOLEAN" },
+        uuid:         { name: "UUID" },
       }
 
       def native_database_types
@@ -57,6 +57,8 @@ module ActiveRecord
         end
       end
 
+      def begin_transaction(isolation: nil, joinable: true, _lazy: true); end
+
       private
         def execute_and_clear(sql, name, binds, prepare: false, async: false)
           sql = transform_query(sql)
@@ -66,7 +68,6 @@ module ActiveRecord
           log(sql, name, binds, type_casted_binds, async: async) do
             ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
               # TODO: prepare の有無でcacheするっぽい？
-              stmt = DuckDB::PreparedStatement.new(@connection, sql)
               if without_prepared_statement?(binds)
                 @connection.query(sql)
               else

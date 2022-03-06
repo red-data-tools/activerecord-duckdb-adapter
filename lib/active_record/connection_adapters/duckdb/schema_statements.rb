@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'debug'
 module ActiveRecord
   module ConnectionAdapters
     module Duckdb
@@ -21,12 +22,12 @@ module ActiveRecord
             scope = quoted_scope(name, type: type)
 
             sql = +"SELECT table_name FROM information_schema.tables"
-            sql << " WHERE table_schema = '#{scope[:schema]}'"
+            sql << " WHERE table_schema = #{scope[:schema]}"
             if scope[:type] || scope[:name]
               conditions = []
-              conditions << "table_type = '#{scope[:type]}'" if scope[:type]
-              conditions << "table_name = '#{scope[:name]}'" if scope[:name]
-              sql << " WHERE #{conditions.join(" AND ")}"
+              conditions << "table_type = #{scope[:type]}" if scope[:type]
+              conditions << "table_name = #{scope[:name]}" if scope[:name]
+              sql << " AND #{conditions.join(" AND ")}"
             end
             sql
           end
@@ -34,7 +35,7 @@ module ActiveRecord
           def quoted_scope(name = nil, type: nil)
             schema, name = extract_schema_qualified_name(name)
             scope = {}
-            scope[:schema] = schema ? quote(schema) : "main"
+            scope[:schema] = schema ? quote(schema) : "'main'"
             scope[:name] = quote(name) if name
             scope[:type] = quote(type) if type
             scope

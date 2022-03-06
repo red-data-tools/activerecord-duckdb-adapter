@@ -11,5 +11,3 @@
 .rspec_status
 
 log/
-Gemfile
-Gemfile.lock

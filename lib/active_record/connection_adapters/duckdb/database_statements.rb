@@ -23,7 +23,7 @@ module ActiveRecord
           
           # TODO: https://github.com/suketa/ruby-duckdb/issues/168
           # build_result(columns: result.columns, rows: result.to_a)
-          build_result(columns: ['id'], rows: result.to_a)
+          build_result(columns: ['id', 'author', 'title', 'body', 'count'], rows: result.to_a)
         end
 
         def exec_delete(sql, name = nil, binds = []) # :nodoc:
