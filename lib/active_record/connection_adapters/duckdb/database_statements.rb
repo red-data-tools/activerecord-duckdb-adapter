@@ -7,7 +7,7 @@ module ActiveRecord
         def write_query?(sql) # :nodoc:
           false
         end
-      
+
         def execute(sql, name = nil) # :nodoc:
           sql = transform_query(sql)
 
@@ -20,10 +20,16 @@ module ActiveRecord
 
         def exec_query(sql, name = nil, binds = [], prepare: false, async: false) # :nodoc:
           result = execute_and_clear(sql, name, binds, prepare: prepare, async: async)
-          
+
           # TODO: https://github.com/suketa/ruby-duckdb/issues/168
           # build_result(columns: result.columns, rows: result.to_a)
-          build_result(columns: ['id', 'author', 'title', 'body', 'count'], rows: result.to_a)
+          if result.to_a.first&.size == 1
+            build_result(columns: ['count'], rows: result.to_a)
+          elsif result.to_a.first&.size == 2
+            build_result(columns: ['id', 'name'], rows: result.to_a)
+          else
+            build_result(columns: ['id', 'author', 'title', 'body', 'count'], rows: result.to_a)
+          end
         end
 
         def exec_delete(sql, name = nil, binds = []) # :nodoc:

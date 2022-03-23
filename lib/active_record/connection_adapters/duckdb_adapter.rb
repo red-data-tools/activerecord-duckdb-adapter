@@ -76,12 +76,12 @@ module ActiveRecord
             end
           end
         end
-        
+
         def column_definitions(table_name) # :nodoc:
           execute("PRAGMA table_info('#{quote_table_name(table_name)}')", "SCHEMA") do |result|
             each_hash(result)
           end
         end
     end
-  end  
+  end
 end

@@ -35,8 +35,5 @@ load_schema
 
 class TestCase < ActiveSupport::TestCase
   include ActiveRecord::TestFixtures
-
-  def load_fixtures(config)
-    ActiveRecord::FixtureSet.create_fixtures(FIXTURE_ROOT, fixture_table_names, fixture_class_names, config).index_by(&:name)
-  end
+  self.fixture_path = ::FIXTURE_ROOT
 end
